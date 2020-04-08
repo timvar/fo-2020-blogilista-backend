@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/blogs
+Content-Type: application/json
+
+{
+  "title": "Once upon time in the West",
+  "author": "Jesse James",
+  "url": "https://foo-bar",
+  "likes": 101
+}
