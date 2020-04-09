@@ -3,7 +3,7 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 const Blog = require('../models/blog')
-const { sixBlogList } = require('./testblogs')
+const { sixBlogList, favoriteBlog } = require('./testblogs')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -28,6 +28,19 @@ test('there are two blogs', async () => {
 test('blogs have id key', async () => {
   const result = await api.get('/api/blogs')
   expect(result.body[0].id).toBeDefined()
+})
+
+test('blog can be added', async () => {
+  const responseBefore = await api.get('/api/blogs')
+
+  await api
+    .post('/api/blogs')
+    .send(favoriteBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const responseAfter = await api.get('/api/blogs')
+  expect(responseAfter.body).toHaveLength(responseBefore.body.length + 1)
 })
 
 afterAll(() => {
