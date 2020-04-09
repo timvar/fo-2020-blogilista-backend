@@ -1,5 +1,5 @@
 const listHelper = require('../utils/list_helper')
-const {emptyBlogList, oneBlogList, sixBlogList} =require('./testblogs')
+const { emptyBlogList, oneBlogList, sixBlogList, favoriteBlog } = require('./testblogs')
 
 test('dummy returns one', () => {
   const blogs = []
@@ -22,4 +22,22 @@ describe('total likes', () => {
     const result = listHelper.totalLikes(sixBlogList)
     expect(result).toBe(36)
   })
+})
+
+describe('favorite blog', () => {
+  test('of empty list is empty', () => {
+    const result = listHelper.favoriteBlog(emptyBlogList)
+    expect(result).toEqual({})
+  })
+
+  test('when list has only one blog equals likes of that', () => {
+    const result = listHelper.favoriteBlog(oneBlogList)
+    expect(result).toEqual(favoriteBlog)
+  })
+
+  test('of a bigger list is calculated right', () => {
+    const result = listHelper.favoriteBlog(sixBlogList)
+    expect(result).toEqual(favoriteBlog)
+  })
+
 })
