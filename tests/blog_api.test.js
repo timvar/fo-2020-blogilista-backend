@@ -81,6 +81,28 @@ test('blog can be added and removed', async () => {
     .expect(204)
 })
 
+test('blog likes can be updated', async () => {
+  const response = await api
+    .post('/api/blogs')
+    .send(favoriteBlog)
+    .expect(200)
+
+  const updatedBlog = {
+    title: favoriteBlog.title,
+    url: favoriteBlog.url,
+    author: favoriteBlog.author,
+    likes: 50
+  }
+
+  const result = await api
+    .put(`/api/blogs/${response.body.id}`)
+    .send(updatedBlog)
+    .expect(200)
+
+  expect(result.body.likes).toBe(50)
+
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
