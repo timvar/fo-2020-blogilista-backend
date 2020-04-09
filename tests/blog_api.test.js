@@ -69,6 +69,18 @@ test('blog must have title and url', async () => {
     .expect(400)
 })
 
+test('blog can be added and removed', async () => {
+
+  const response = await api
+    .post('/api/blogs')
+    .send(favoriteBlog)
+    .expect(200)
+
+  await api
+    .delete(`/api/blogs/${response.body.id}`)
+    .expect(204)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
