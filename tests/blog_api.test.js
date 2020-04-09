@@ -43,6 +43,20 @@ test('blog can be added', async () => {
   expect(responseAfter.body).toHaveLength(responseBefore.body.length + 1)
 })
 
+test('blog likes default value is zero', async () => {
+  const newBlog = {
+    title: 'New blog with title only'
+  }
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  expect(response.body.likes).toBe(0)
+})
+
 afterAll(() => {
   mongoose.connection.close()
 })
