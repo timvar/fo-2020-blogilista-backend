@@ -36,7 +36,7 @@ test('blog can be added', async () => {
   await api
     .post('/api/blogs')
     .send(favoriteBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   const responseAfter = await api.get('/api/blogs')
@@ -45,16 +45,28 @@ test('blog can be added', async () => {
 
 test('blog likes default value is zero', async () => {
   const newBlog = {
-    title: 'New blog with title only'
+    title: 'New blog with title only',
+    url: 'http://foo'
   }
 
   const response = await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   expect(response.body.likes).toBe(0)
+})
+
+test('blog must have title and url', async () => {
+  const newBlog = {
+    author: 'Elvis'
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
 })
 
 afterAll(() => {
