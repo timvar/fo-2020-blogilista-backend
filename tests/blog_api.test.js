@@ -72,6 +72,15 @@ test('blog must have title and url', async () => {
     .expect(400)
 })
 
+test('test blog can be added', async () => {
+
+  await api
+    .post('/api/blogs')
+    .send(favoriteBlog)
+    .expect(200)
+
+})
+
 test('blog can be added and removed', async () => {
 
   const response = await api
