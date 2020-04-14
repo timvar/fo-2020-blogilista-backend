@@ -9,11 +9,24 @@ const { sixBlogList, favoriteBlog } = require('./testblogs')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
+  const testUser = {
+    username: 'superuser',
+    name: 'Testaaja',
+    password: 'arska'
+  }
+
   await Blog.deleteMany({})
+  await User.deleteMany({})
   let blog = new Blog(sixBlogList[0])
   await blog.save()
   blog = new Blog(sixBlogList[1])
   await blog.save()
+
+  await api
+    .post('/api/users')
+    .send(testUser)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
 })
 
 test('blogs are returned as json', async () => {
@@ -33,12 +46,38 @@ test('blogs have id key', async () => {
   expect(result.body[0].id).toBeDefined()
 })
 
+test('testUser can log in', async () => {
+
+  const testUserLogin = {
+    username: 'superuser',
+    password: 'arska'
+  }
+  await api
+    .post('/api/login')
+    .send(testUserLogin)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+})
+
 test('blog can be added', async () => {
   const responseBefore = await api.get('/api/blogs')
+  const testUserLogin = {
+    username: 'superuser',
+    password: 'arska'
+  }
+
+  const user = await api
+    .post('/api/login')
+    .send(testUserLogin)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const { token } = user.body
 
   await api
     .post('/api/blogs')
     .send(favoriteBlog)
+    .set('Authorization', `Bearer ${token}`)
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
@@ -52,9 +91,23 @@ test('blog likes default value is zero', async () => {
     url: 'http://foo'
   }
 
+  const testUserLogin = {
+    username: 'superuser',
+    password: 'arska'
+  }
+
+  const user = await api
+    .post('/api/login')
+    .send(testUserLogin)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const { token } = user.body
+
   const response = await api
     .post('/api/blogs')
     .send(newBlog)
+    .set('Authorization', `Bearer ${token}`)
     .expect(200)
     .expect('Content-Type', /application\/json/)
 
@@ -66,36 +119,71 @@ test('blog must have title and url', async () => {
     author: 'Elvis'
   }
 
+  const testUserLogin = {
+    username: 'superuser',
+    password: 'arska'
+  }
+
+  const user = await api
+    .post('/api/login')
+    .send(testUserLogin)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const { token } = user.body
+
   await api
     .post('/api/blogs')
     .send(newBlog)
+    .set('Authorization', `Bearer ${token}`)
     .expect(400)
-})
-
-test('test blog can be added', async () => {
-
-  await api
-    .post('/api/blogs')
-    .send(favoriteBlog)
-    .expect(200)
-
 })
 
 test('blog can be added and removed', async () => {
 
+  const testUserLogin = {
+    username: 'superuser',
+    password: 'arska'
+  }
+
+  const user = await api
+    .post('/api/login')
+    .send(testUserLogin)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const { token } = user.body
+
   const response = await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(favoriteBlog)
     .expect(200)
 
   await api
     .delete(`/api/blogs/${response.body.id}`)
+    .set('Authorization', `Bearer ${token}`)
     .expect(204)
 })
 
 test('blog likes can be updated', async () => {
+
+  const testUserLogin = {
+    username: 'superuser',
+    password: 'arska'
+  }
+
+  const user = await api
+    .post('/api/login')
+    .send(testUserLogin)
+    .expect(200)
+    .expect('Content-Type', /application\/json/)
+
+  const { token } = user.body
+
   const response = await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(favoriteBlog)
     .expect(200)
 
