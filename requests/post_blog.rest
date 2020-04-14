@@ -1,8 +1,9 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3RpaGVtdWxpIiwiaWQiOiI1ZThmNDljZjBlZDBmZjU0YmQxOGQ1YjIiLCJpYXQiOjE1ODY4NTQxNDB9.eFYndz8unAL2CmyRLd0P7XN-tyvZplCuyN_DGJ638YQ
 
 {
-  "title": "4th blog",
+  "title": "14.4. blog",
   "author": "Jesse James",
   "url": "https://foo-bar",
   "likes": 101
