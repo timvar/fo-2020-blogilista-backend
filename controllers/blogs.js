@@ -11,17 +11,12 @@ blogsRouter.get('/', async (req, res) => {
 blogsRouter.post('/', async (req, res) => {
   const { title, author, url, likes } = req.body
   const { token } = req
-  console.log('token', token)
   const decodedToken = jwt.verify(token, process.env.SECRET)
   if (!token || !decodedToken.id) {
     return res.status(401).json({ error: 'token missing or invalid' })
   }
   const user = await User.findById(decodedToken.id)
 
-  /*
-  const userList = await User.find({})
-  const user = userList[0]
-  */
   const blog = new Blog({
     title,
     author,
@@ -47,8 +42,23 @@ blogsRouter.put('/:id', async (req, res) => {
 })
 
 blogsRouter.delete('/:id', async (req, res) => {
-  await Blog.findByIdAndRemove(req.params.id)
-  res.status(204).end()
+  const { token } = req
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+
+  if (!token || !decodedToken.id) {
+    return res.status(401).json({ error: 'token missing or invalid' })
+  }
+
+  const blog = await Blog.findById(req.params.id)
+
+  if (!blog) {
+    res.status(400).send({ error: 'blog does not exist' })
+  } else if (blog.user.toString() === decodedToken.id) {
+    await Blog.findByIdAndRemove(req.params.id)
+    res.status(204).end()
+  } else {
+    res.status(400).send({ error: 'You are not authorized to delete this blog.' })
+  }
 })
 
 module.exports = blogsRouter
